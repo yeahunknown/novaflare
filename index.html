@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaFlare Wallet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #2d0036, #000000);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .container {
+            width: 400px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .logo span {
+            color: #a742f5;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #a742f5;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.07);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #a742f5;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: linear-gradient(90deg, #9333ea, #6700a5);
+            color: white;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: linear-gradient(90deg, #a742f5, #7e0fcd);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(167, 66, 245, 0.4);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: #000;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(167, 66, 245, 0.6);
+            position: relative;
+            color: white;
+        }
+        
+        .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h2 {
+            color: #ff3a3a;
+            margin-bottom: 10px;
+        }
+        
+        .recovery-phrases {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            position: relative;
+            filter: blur(5px);
+            transition: filter 0.3s ease;
+        }
+        
+        .recovery-phrases.visible {
+            filter: blur(0);
+        }
+        
+        .phrase-wrapper {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .phrase-item {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.03);
+            padding: 8px;
+            border-radius: 4px;
+        }
+        
+        .phrase-item span:first-child {
+            color: #a742f5;
+            margin-right: 5px;
+            font-size: 12px;
+        }
+        
+        .toggle-visibility {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #a742f5;
+            cursor: pointer;
+            width: auto;
+            padding: 5px;
+        }
+        
+        .modal-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .welcome-modal .modal-content {
+            text-align: center;
+            background-color: #000;
+            border: 1px solid #a742f5;
+        }
+        
+        .welcome-modal h2 {
+            color: #a742f5;
+            margin-bottom: 20px;
+        }
+        
+        .features {
+            text-align: left;
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .features h3 {
+            margin-bottom: 10px;
+            color: #a742f5;
+            font-size: 18px;
+        }
+        
+        .features ul {
+            list-style-type: none;
+        }
+        
+        .features li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+        }
+        
+        .features li:last-child {
+            border-bottom: none;
+        }
+        
+        .features li i {
+            margin-right: 10px;
+            color: #a742f5;
+        }
+        
+        .logo-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: #a742f5;
+        }
+        
+        .lock-icon {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #ff3a3a;
+        }
+        
+        .timer {
+            display: block;
+            font-size: 14px;
+            margin-top: 10px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-fire-alt logo-icon"></i>
+            <h1>Nova<span>Flare</span> Wallet</h1>
+        </div>
+        
+        <form id="signupForm">
+            <div class="input-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="customerId">Customer ID</label>
+                <input type="text" id="customerId" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+    
+    <!-- Recovery Phrases Modal -->
+    <div id="recoveryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-shield-alt lock-icon"></i>
+                <h2>These are your recovery phrases, don't share them</h2>
+                <p>Write these down and store them in a secure location.</p>
+            </div>
+            
+            <div class="recovery-phrases" id="recoveryPhrases">
+                <button class="toggle-visibility" id="toggleVisibility">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <div class="phrase-wrapper">
+                    <!-- Phrases will be generated dynamically -->
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="understandBtn" disabled>I understand (<span id="timer">3</span>)</button>
+                <p class="timer">Please read carefully before proceeding</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Welcome Modal -->
+    <div id="welcomeModal" class="modal welcome-modal">
+        <div class="modal-content">
+            <i class="fas fa-check-circle" style="font-size: 48px; color: #a742f5; margin-bottom: 20px;"></i>
+            <h2>Welcome to NovaFlare Premium!</h2>
+            <p>Your secure wallet has been successfully created.</p>
+            
+            <div class="features">
+                <h3>You've unlocked:</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Panama privacy servers</li>
+                    <li><i class="fas fa-eraser"></i> Blockchain wiping</li>
+                    <li><i class="fas fa-bolt"></i> Fast speeds</li>
+                    <li><i class="fas fa-lock"></i> SSH encryption</li>
+                    <li><i class="fas fa-history"></i> No logs</li>
+                </ul>
+            </div>
+            
+            <div class="modal-footer" style="margin-top: 30px;">
+                <button id="getStartedBtn">Get Started</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const signupForm = document.getElementById('signupForm');
+            const recoveryModal = document.getElementById('recoveryModal');
+            const welcomeModal = document.getElementById('welcomeModal');
+            const recoveryPhrasesDiv = document.getElementById('recoveryPhrases');
+            const phraseWrapper = recoveryPhrasesDiv.querySelector('.phrase-wrapper');
+            const toggleVisibilityBtn = document.getElementById('toggleVisibility');
+            const understandBtn = document.getElementById('understandBtn');
+            const timerSpan = document.getElementById('timer');
+            const getStartedBtn = document.getElementById('getStartedBtn');
+            
+            // Generate random recovery phrases
+            const words = [
+                'ocean', 'mountain', 'library', 'network', 'quantum', 'digital', 
+                'binary', 'crypto', 'secure', 'private', 'ledger', 'wallet',
+                'token', 'asset', 'block', 'chain', 'verify', 'encrypt',
+                'decrypt', 'protocol', 'node', 'hash', 'seed', 'key'
+            ];
+            
+            function generateRecoveryPhrases() {
+                phraseWrapper.innerHTML = '';
+                
+                for (let i = 1; i <= 12; i++) {
+                    const randomWordIndex = Math.floor(Math.random() * words.length);
+                    const phrase = document.createElement('div');
+                    phrase.className = 'phrase-item';
+                    phrase.innerHTML = `<span>${i}.</span><span>${words[randomWordIndex]}</span>`;
+                    phraseWrapper.appendChild(phrase);
+                }
+            }
+            
+            // Toggle visibility of recovery phrases
+            toggleVisibilityBtn.addEventListener('click', function() {
+                recoveryPhrasesDiv.classList.toggle('visible');
+                const icon = toggleVisibilityBtn.querySelector('i');
+                if (recoveryPhrasesDiv.classList.contains('visible')) {
+                    icon.className = 'fas fa-eye-slash';
+                } else {
+                    icon.className = 'fas fa-eye';
+                }
+            });
+            
+            // Handle form submission
+            signupForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                generateRecoveryPhrases();
+                recoveryModal.style.display = 'flex';
+                
+                // Timer for the understand button
+                let secondsLeft = 3;
+                understandBtn.disabled = true;
+                
+                const countdownInterval = setInterval(function() {
+                    secondsLeft--;
+                    timerSpan.textContent = secondsLeft;
+                    
+                    if (secondsLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        understandBtn.disabled = false;
+                        timerSpan.textContent = '0';
+                    }
+                }, 1000);
+            });
+            
+            // Handle understand button click
+            understandBtn.addEventListener('click', function() {
+                recoveryModal.style.display = 'none';
+                welcomeModal.style.display = 'flex';
+            });
+            
+            // Handle get started button click - load popup.html
+            getStartedBtn.addEventListener('click', function() {
+                // Redirect to popup.html
+                window.location.href = 'popup.html';
+            });
+        });
+    </script>
+</body>
+</html>
